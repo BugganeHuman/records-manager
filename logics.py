@@ -3,17 +3,19 @@ from pathlib import Path
 import shutil
 import os
 import subprocess
+
+
 path_to_settings = ""
 path_to_records = ""
+
 def start():
     path_records_dir = "records"
     os.makedirs(path_records_dir, exist_ok=True)
-    #os.chdir("records")
     global path_to_records
     path_to_records = (Path.cwd()/"records").resolve()
     with open ("settings.txt", 'a+') as file:
         global path_to_settings
-        path_to_settings = (Path.cwd()/"settings.txt").resolve()
+        path_to_settings = str((Path.cwd()/"settings.txt").resolve())
 
         file.seek(0)  # переместить курсор на элемент 0
         #бляя это пиздец, крч в начале чтения при a+ курсор находится в конце
@@ -33,7 +35,6 @@ def start():
             else:
                 file.write("notepad.exe\n")
     print("start() executed")
-
 
 def add_file( directory = None):
     path_to_dir_now = os.getcwd()
@@ -66,21 +67,22 @@ def add_file( directory = None):
         #print(dict_creations[choice_file_extension])
         with open(dict_creations[choice_file_extension], 'a+' ) as file:
             with open(path_to_settings, "r+") as settings_file:
-                print(1)
+
                 if settings_file.readline().strip() == "notepad.exe":
                     os.startfile(dict_creations[choice_file_extension], 'open')
                 else:
                     settings_file.seek(0)
                     print(settings_file.readline().strip())
-                    print(2)
+
                     settings_file.seek(0)
                     subprocess.Popen([settings_file.readline().strip(),dict_creations[choice_file_extension]])
 
 def show(number = None):
-    print(path_to_records)
-    print(os.getcwd())
-    print(os.getcwd() == path_to_records)
-    if os.getcwd() != path_to_records:
+
+    path_to_dir_now = Path(os.getcwd())
+    print(type(path_to_dir_now)," and ", type(path_to_records))
+    print(path_to_dir_now == path_to_records)
+    if path_to_dir_now != path_to_records:
         print("change to records")
         os.chdir("records")
     else:
@@ -93,7 +95,6 @@ def show(number = None):
     for file in list_files:
         print(f"{counter} - {file}")
         counter += 1
-    #os.chdir("records")
     print("show() executed")
 
 
