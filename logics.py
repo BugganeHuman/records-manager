@@ -95,7 +95,15 @@ def show(number = None):
     for file in list_files:
         print(f"{counter} - {file}")
         counter += 1
+    if number is None:
+        choice_file = int(input("Enter files number to open him: "))
+        number = choice_file
+    with open (path_to_settings, 'r+') as file:
+        file.seek(0)
+        subprocess.Popen([file.readline().strip(), list_files[number]])
+
     print("show() executed")
+
 
 
 
@@ -108,5 +116,5 @@ def show(number = None):
 
 
 start()
-add_file()
+#add_file()
 show()
