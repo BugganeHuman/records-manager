@@ -49,13 +49,15 @@ def add_file( directory = None):
                         "1 - to create .txt\n\n"
                         "2 - to create .md\n\n"
                         "3 - to create directory\n\n"
+                        "or write your extension\n\n"
                         "or just press Enter to create .txt\n"
                         ":      ")
     choice_file_name = input("write file name\n"
                              ": ")
-    if choice_file_extension == 3:
+    if choice_file_extension == "3":
         mkdir(choice_file_name)
         print(f"dir {choice_file_name} created")
+        return
     else:
         dict_creations = {
             "1": choice_file_name + ".txt",
@@ -77,14 +79,14 @@ def add_file( directory = None):
                     settings_file.seek(0)
                     subprocess.Popen([settings_file.readline().strip(),dict_creations[choice_file_extension]])
 
-def show(number = None):
+def show(number = None, path_to_dir = None):
 
     path_to_dir_now = Path(os.getcwd())
     print(type(path_to_dir_now)," and ", type(path_to_records))
     print(path_to_dir_now == path_to_records)
     if path_to_dir_now != path_to_records:
-        print("change to records")
-        os.chdir("records")
+        pass
+        os.chdir(path_to_dir)
     else:
         pass
     list_files = []
@@ -96,11 +98,24 @@ def show(number = None):
         print(f"{counter} - {file}")
         counter += 1
     if number is None:
-        choice_file = int(input("Enter files number to open him: "))
+        choice_file = input("Enter files number to open him: ")
         number = choice_file
+        path_to_file_resolve =Path(Path.cwd()/list_files[int(number)]).resolve()
+        if path_to_file_resolve.is_dir():
+            os.chdir(path_to_file_resolve)
+            show(None, path_to_file_resolve)
+            act_file_choice = input("write:\n"
+                                    "0 - to back\n"
+                                    "1 - to add: ")
+            if act_file_choice == "0":
+                os.chdir("..")
+                show(Path.cwd())
+            elif act_file_choice == "1":
+                add_file(path_to_file_resolve)
+            return
     with open (path_to_settings, 'r+') as file:
         file.seek(0)
-        subprocess.Popen([file.readline().strip(), list_files[number]])
+        subprocess.Popen([file.readline().strip(), list_files[int(number)]])
 
     print("show() executed")
 
@@ -117,4 +132,4 @@ def show(number = None):
 
 start()
 #add_file()
-show()
+show(None,path_to_records)
