@@ -104,7 +104,7 @@ def show(number = None, path_to_dir = None):
         if path_to_file_resolve.is_dir():
             os.chdir(path_to_file_resolve)
             show(None, path_to_file_resolve)
-            act_file_choice = input("write:\n"
+            act_file_choice = input("write:\n"    # тут баг
                                     "0 - to back\n"
                                     "1 - to add: ")
             if act_file_choice == "0":
