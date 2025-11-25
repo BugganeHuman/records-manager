@@ -21,7 +21,7 @@ def start():
         #бляя это пиздец, крч в начале чтения при a+ курсор находится в конце
         # и поэтому, len возвращает то сколько символов перед курсором
         # и каждый раз когда ты проходишся по файлу курсор становится в конец
-        if len(file.read().strip()) < 3:# баг
+        if len(file.read().strip()) < 3:
             open_with = input("Enter the path to the .exe file of the program\n"
                           "through which you want to open the file without \"\"\n"
                           "or just press Enter to open with notepad\n"
@@ -133,3 +133,4 @@ def show(number = None, path_to_dir = None):
 start()
 #add_file()
 show(None,path_to_records)
+
