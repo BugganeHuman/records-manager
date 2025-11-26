@@ -84,8 +84,8 @@ def add_file( directory = None):
                 subprocess.Popen([file.readline().strip(),
                                 dict_creations[choice_file_extension]])
 
-def show(number = None, path_to_dir = None): # потом надо доделать что бы
-    path_to_dir_now = Path(os.getcwd())      # при открытие файла прога не закрывалась
+def show(number = None, path_to_dir = None):
+    path_to_dir_now = Path(os.getcwd())
     if path_to_dir_now != path_to_records:
         os.chdir(path_to_dir)
     else:
@@ -201,4 +201,5 @@ def remove_file(path_to_file):
         os.remove(path_to_file)
         print("done")
     show(Path.cwd())
+
 
