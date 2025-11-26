@@ -1,3 +1,4 @@
+from idlelib.browser import is_browseable_extension
 from os import mkdir
 from pathlib import Path
 import shutil
@@ -26,11 +27,12 @@ def start():
                           "through which you want to open the file without \"\"\n"
                           "or just press Enter to open with notepad\n"
                           ":    ")
-            if len(open_with.strip()) > 0:
+            if len(open_with.strip()) > 1:
                 path_to_open = Path(open_with)
                 if path_to_open.exists():
                     file.write(f"{path_to_open} \n")
                 else:
+                    file.write("notepad.exe\n")
                     print(path_to_open, "did not found")
             else:
                 file.write("notepad.exe\n")
@@ -71,55 +73,77 @@ def add_file( directory = None):
             with open(path_to_settings, "r+") as settings_file:
 
                 if settings_file.readline().strip() == "notepad.exe":
-                    os.startfile(dict_creations[choice_file_extension], 'open')
+                    os.startfile(dict_creations[choice_file_extension],
+                                 'open')
                 else:
                     settings_file.seek(0)
                     print(settings_file.readline().strip())
 
                     settings_file.seek(0)
-                    subprocess.Popen([settings_file.readline().strip(),dict_creations[choice_file_extension]])
+                    subprocess.Popen([settings_file.readline().strip(),
+                                      dict_creations[choice_file_extension]])
 
-def show(number = None, path_to_dir = None):
-
-    path_to_dir_now = Path(os.getcwd())
-    print(type(path_to_dir_now)," and ", type(path_to_records))
-    print(path_to_dir_now == path_to_records)
+def show(number = None, path_to_dir = None): # потом надо доделать что бы
+    path_to_dir_now = Path(os.getcwd())      # при открытие файла прога не закрывалась
     if path_to_dir_now != path_to_records:
-        pass
         os.chdir(path_to_dir)
     else:
         pass
-    list_files = []
-    path_records = Path(os.getcwd())
-    for file in path_records.iterdir():
-        list_files.append(file.name)
+    list_with_files = []
+    path_to_dir_now = Path(os.getcwd())
+    for file in path_to_dir_now.iterdir():
+        list_with_files.append(file.name)
     counter = 0
-    for file in list_files:
-        print(f"{counter} - {file}")
+    for file in list_with_files:
+        print(f"\n{counter} - {file}")
         counter += 1
     if number is None:
-        choice_file = input("Enter files number to open him: ")
+        choice_file = None
+        if Path.cwd().name != "records":
+            choice_file = input("\nEnter files number to open him\n"
+                            "Or write |-1| to return: ")
+        else:
+            choice_file = input("\nEnter files number to open him: ")
         number = choice_file
-        path_to_file_resolve =Path(Path.cwd()/list_files[int(number)]).resolve()
+        if number == "-1" and Path.cwd().name != "records":
+            while True:
+                os.chdir("..")
+                show(None,Path.cwd())
+                return
+        path_to_file_resolve =(Path(Path.cwd()/list_with_files[int(number)])
+                               .resolve())
         if path_to_file_resolve.is_dir():
             os.chdir(path_to_file_resolve)
             show(None, path_to_file_resolve)
-            act_file_choice = input("write:\n"    # тут баг
-                                    "0 - to back\n"
-                                    "1 - to add: ")
-            if act_file_choice == "0":
-                os.chdir("..")
-                show(Path.cwd())
-            elif act_file_choice == "1":
-                add_file(path_to_file_resolve)
             return
     with open (path_to_settings, 'r+') as file:
         file.seek(0)
-        subprocess.Popen([file.readline().strip(), list_files[int(number)]])
-
+        file_for_open = Path (list_with_files[int(number)])
+        for line in file:
+            if line.strip() == file_for_open.suffix:
+                path_to_open = file.readline().strip()
+                subprocess.Popen([path_to_open, file_for_open])
+                return
+        file.seek(0)
+        subprocess.Popen([file.readline().strip(), list_with_files[int(number)]])
     print("show() executed")
+        # вот здесь надо проверять являются ли настройки специализированными
+        # если да то смотреть какое расширение у спициалезированого файла
+        # и искать строчку ну допистим с ".md" если найдена то использавать
+        # тот путь для редактора что после строки, если не найдена то
+        # использавать уневерсальный вариант, тоесть то что на первой строчке
 
-
+def add_special_extension():
+    special_extension = input("Write the extension for which you want"
+                              " to assign a special program\n"
+                              "for example \".md\" or \".txt\" with out \"\"\n"
+                              ":   ")
+    path_to_special_extension =input("write path to program.exe\n"
+                                 ": ")
+    with open("settings.txt", 'a+') as file:
+        if Path(path_to_special_extension).exists():
+            file.write(special_extension + "\n")
+            file.write(path_to_special_extension + "\n")
 
 
 
@@ -133,4 +157,3 @@ def show(number = None, path_to_dir = None):
 start()
 #add_file()
 show(None,path_to_records)
-
