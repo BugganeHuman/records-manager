@@ -160,7 +160,8 @@ def add_special_extension():
             file.write(path_to_special_extension + "\n")
     print(f"add_special_extension() executed")
 
-
+def move_file():
+    pass
 
     # надо что бы спрашивал у юзера что создать 1)txt.файл 2)md.файл 3)папку
     # и каждому файлу присваивается id (id должен быть програмным
