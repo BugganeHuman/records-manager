@@ -1,10 +1,10 @@
-from idlelib.browser import is_browseable_extension
 from os import mkdir
 from pathlib import Path
 import shutil
 import os
 import subprocess
-from tkinter.font import names
+import sys
+
 
 path_to_settings = ""
 path_to_records = ""
@@ -17,7 +17,6 @@ def start():
     with open ("settings.txt", 'a+') as file:
         global path_to_settings
         path_to_settings = str((Path.cwd()/"settings.txt").resolve())
-
         file.seek(0)  # переместить курсор на элемент 0
         #бляя это пиздец, крч в начале чтения при a+ курсор находится в конце
         # и поэтому, len возвращает то сколько символов перед курсором
@@ -67,8 +66,6 @@ def add_file( directory = None):
         }
         if choice_file_extension == "":
             choice_file_extension = str(1)
-
-        #print(dict_creations[choice_file_extension])
         with open(dict_creations[choice_file_extension], "w") as file:
             file.write("")
             pass
@@ -109,11 +106,17 @@ def show(number = None, path_to_dir = None): # потом надо додела�
                                     "Or write |-1| to return\n"
                                     "Or write |-2| to add file\n"
                                     "Or write |-3| to move file\n"
+                                    "Or write |-4| to add special_extension\n"
+                                    "Or write |-0| - to close program\n"
+                                    
                                     ": ")
             else:
                 choice_file = input("\nEnter files number to open him\n"
                                     "Or write |-2| to add file\n"
                                     "Or write |-3| to move file\n"
+                                    "Or write |-4| to add special_extension\n"
+                                    "Or write |-5| ro remove some file\n"
+                                    "Or write |-0| to close program\n"
                                     ": ")
             number = choice_file
             if number == "-1" and Path.cwd().name != "records":
@@ -127,17 +130,29 @@ def show(number = None, path_to_dir = None): # потом надо додела�
             elif number == "-3":
                 path_to_movable_file = (
                 Path(list_with_files[int(input("write number of movable_file: "))]))
-                path_to_moving_place = Path(list_with_files[int(input(
+                moving_place = input(
                                     "write number of dir for moving file\n"
-                                    "or write |-1| for moving to parent dir: "))])
-                if path_to_moving_place == "-1": # баг, файлы не перемещаются в
-                                                # parent папку
-                    move_file(path_to_movable_file,Path.cwd().parent/path_to_movable_file )
+                                    "or write |-1| for moving to parent dir: ")
+                path_to_moving_place = Path(list_with_files[int(moving_place)])
+                if moving_place == "-1": # баг, файлы не перемещаются в
+                    # parent папку
+                    print(path_to_movable_file)
+                    print(Path.cwd().parent/path_to_movable_file)
+                    print(1)
+                    move_file(path_to_movable_file,Path.cwd().parent )
                 else:
                     move_file(path_to_movable_file, path_to_moving_place)
                 print("done")
                 show(None, Path.cwd())
-
+            elif number == "-0":
+                sys.exit()
+            elif number == "-4":
+                add_special_extension()
+                continue
+            elif number == "-5":
+                number_of_remove_file = input("write number of file to remove: ")
+                remove_file(list_with_files[int(number_of_remove_file)])
+                continue
             path_to_file_resolve =(Path(Path.cwd()/list_with_files[int(number)])
                                 .resolve())
             if path_to_file_resolve.is_dir():
@@ -157,13 +172,11 @@ def show(number = None, path_to_dir = None): # потом надо додела�
                     file.seek(0)
                     subprocess.Popen([file.readline().strip(), list_with_files[int(number)]])
             print("show() executed")
-        # вот здесь надо проверять являются ли настройки специализированными
-        # если да то смотреть какое расширение у спициалезированого файла
-        # и искать строчку ну допистим с ".md" если найдена то использавать
-        # тот путь для редактора что после строки, если не найдена то
-        # использавать уневерсальный вариант, тоесть то что на первой строчке
 
 def add_special_extension():
+    dir_now = Path.cwd()
+    os.chdir(path_to_records)
+    os.chdir("..")
     special_extension = input("Write the extension for which you want"
                               " to assign a special program\n"
                               "for example \".md\" or \".txt\" with out \"\"\n"
@@ -175,18 +188,17 @@ def add_special_extension():
             file.write(special_extension + "\n")
             file.write(path_to_special_extension + "\n")
     print(f"add_special_extension() executed")
+    show(dir_now)
 
 def move_file(path_to_movable_file,path_to_moving_place ):
     shutil.move(path_to_movable_file, path_to_moving_place)
 
+def remove_file(path_to_file):
+    if Path(path_to_file).is_dir():
+        shutil.rmtree(path_to_file)
+        print("done")
+    if Path(path_to_file).is_file():
+        os.remove(path_to_file)
+        print("done")
+    show(Path.cwd())
 
-    # надо что бы спрашивал у юзера что создать 1)txt.файл 2)md.файл 3)папку
-    # и каждому файлу присваивается id (id должен быть програмным
-    # а не в риальном названии файла)
-    # и что бы это создавалось в той папке в которой находимся
-    # если создается файл, то открываеся в редакторе который указан
-
-
-start()
-#add_file()
-show(None,path_to_records)
