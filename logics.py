@@ -4,7 +4,7 @@ from pathlib import Path
 import shutil
 import os
 import subprocess
-
+from tkinter.font import names
 
 path_to_settings = ""
 path_to_records = ""
@@ -69,19 +69,10 @@ def add_file( directory = None):
             choice_file_extension = str(1)
 
         #print(dict_creations[choice_file_extension])
-        with open(dict_creations[choice_file_extension], 'a+' ) as file:
-            with open(path_to_settings, "r+") as settings_file:
-
-                if settings_file.readline().strip() == "notepad.exe":
-                    os.startfile(dict_creations[choice_file_extension],
-                                 'open')
-                else:
-                    settings_file.seek(0)
-                    print(settings_file.readline().strip())
-
-                    settings_file.seek(0)
-                    subprocess.Popen([settings_file.readline().strip(),
-                                      dict_creations[choice_file_extension]])
+        with open(path_to_settings, "r+") as file:
+            pass
+            #subprocess.Popen([settings_file.readline().strip(),
+                                #dict_creations[choice_file_extension]])
 
 def show(number = None, path_to_dir = None): # потом надо доделать что бы
     path_to_dir_now = Path(os.getcwd())      # при открытие файла прога не закрывалась
@@ -98,35 +89,44 @@ def show(number = None, path_to_dir = None): # потом надо додела�
         print(f"\n{counter} - {file}")
         counter += 1
     if number is None:
-        choice_file = None
-        if Path.cwd().name != "records":
-            choice_file = input("\nEnter files number to open him\n"
-                            "Or write |-1| to return: ")
-        else:
-            choice_file = input("\nEnter files number to open him: ")
-        number = choice_file
-        if number == "-1" and Path.cwd().name != "records":
-            while True:
-                os.chdir("..")
-                show(None,Path.cwd())
+        while True:
+            choice_file = None
+            if Path.cwd().name != "records":
+                choice_file = input("\nEnter files number to open him\n"
+                                    "Or write |-1| to return"
+                                    "Or write |-2| to add file\n"
+                                    ": ")
+            else:
+                choice_file = input("\nEnter files number to open him\n"
+                                    "or write |-2| to add file\n"
+                                    ": ")
+            number = choice_file
+            if number == "-1" and Path.cwd().name != "records":
+                while True:
+                    os.chdir("..")
+                    show(None,Path.cwd())
+                    return
+            elif number == "-2":
+                add_file(Path.cwd())
+            path_to_file_resolve =(Path(Path.cwd()/list_with_files[int(number)])
+                                .resolve())
+            if path_to_file_resolve.is_dir():
+                os.chdir(path_to_file_resolve)
+                show(None, path_to_file_resolve)
                 return
-        path_to_file_resolve =(Path(Path.cwd()/list_with_files[int(number)])
-                               .resolve())
-        if path_to_file_resolve.is_dir():
-            os.chdir(path_to_file_resolve)
-            show(None, path_to_file_resolve)
-            return
-    with open (path_to_settings, 'r+') as file:
-        file.seek(0)
-        file_for_open = Path (list_with_files[int(number)])
-        for line in file:
-            if line.strip() == file_for_open.suffix:
-                path_to_open = file.readline().strip()
-                subprocess.Popen([path_to_open, file_for_open])
-                return
-        file.seek(0)
-        subprocess.Popen([file.readline().strip(), list_with_files[int(number)]])
-    print("show() executed")
+            with open (path_to_settings, 'r+') as file:
+                file.seek(0)
+                file_for_open = Path (list_with_files[int(number)])
+                found_suffix = False
+                for line in file:
+                    if line.strip() == file_for_open.suffix:
+                        path_to_open = file.readline().strip()
+                        subprocess.Popen([path_to_open, file_for_open])
+                        found_suffix = True
+                if not found_suffix:
+                    file.seek(0)
+                    subprocess.Popen([file.readline().strip(), list_with_files[int(number)]])
+            print("show() executed")
         # вот здесь надо проверять являются ли настройки специализированными
         # если да то смотреть какое расширение у спициалезированого файла
         # и искать строчку ну допистим с ".md" если найдена то использавать
@@ -144,6 +144,7 @@ def add_special_extension():
         if Path(path_to_special_extension).exists():
             file.write(special_extension + "\n")
             file.write(path_to_special_extension + "\n")
+    print(f"add_special_extension() executed")
 
 
 
