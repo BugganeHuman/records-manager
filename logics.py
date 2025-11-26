@@ -106,12 +106,14 @@ def show(number = None, path_to_dir = None): # потом надо додела�
             choice_file = None
             if Path.cwd().name != "records":
                 choice_file = input("\nEnter files number to open him\n"
-                                    "Or write |-1| to return"
+                                    "Or write |-1| to return\n"
                                     "Or write |-2| to add file\n"
+                                    "Or write |-3| to move file\n"
                                     ": ")
             else:
                 choice_file = input("\nEnter files number to open him\n"
-                                    "or write |-2| to add file\n"
+                                    "Or write |-2| to add file\n"
+                                    "Or write |-3| to move file\n"
                                     ": ")
             number = choice_file
             if number == "-1" and Path.cwd().name != "records":
@@ -122,6 +124,20 @@ def show(number = None, path_to_dir = None): # потом надо додела�
             elif number == "-2":
                 add_file(Path.cwd())
                 show(None,Path.cwd())
+            elif number == "-3":
+                path_to_movable_file = (
+                Path(list_with_files[int(input("write number of movable_file: "))]))
+                path_to_moving_place = Path(list_with_files[int(input(
+                                    "write number of dir for moving file\n"
+                                    "or write |-1| for moving to parent dir: "))])
+                if path_to_moving_place == "-1": # баг, файлы не перемещаются в
+                                                # parent папку
+                    move_file(path_to_movable_file,Path.cwd().parent/path_to_movable_file )
+                else:
+                    move_file(path_to_movable_file, path_to_moving_place)
+                print("done")
+                show(None, Path.cwd())
+
             path_to_file_resolve =(Path(Path.cwd()/list_with_files[int(number)])
                                 .resolve())
             if path_to_file_resolve.is_dir():
@@ -160,8 +176,9 @@ def add_special_extension():
             file.write(path_to_special_extension + "\n")
     print(f"add_special_extension() executed")
 
-def move_file():
-    pass
+def move_file(path_to_movable_file,path_to_moving_place ):
+    shutil.move(path_to_movable_file, path_to_moving_place)
+
 
     # надо что бы спрашивал у юзера что создать 1)txt.файл 2)md.файл 3)папку
     # и каждому файлу присваивается id (id должен быть програмным
