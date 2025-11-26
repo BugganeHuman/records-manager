@@ -69,10 +69,23 @@ def add_file( directory = None):
             choice_file_extension = str(1)
 
         #print(dict_creations[choice_file_extension])
-        with open(path_to_settings, "r+") as file:
+        with open(dict_creations[choice_file_extension], "w") as file:
+            file.write("")
             pass
-            #subprocess.Popen([settings_file.readline().strip(),
-                                #dict_creations[choice_file_extension]])
+        with open(path_to_settings, "r+") as file:
+            file.seek(0)
+            file_for_open = Path(dict_creations[choice_file_extension])
+            print(type(file_for_open))
+            found_suffix = False
+            for line in file:
+                if line.strip() == file_for_open.suffix:
+                    path_to_open =  file.readline().strip()
+                    subprocess.Popen([path_to_open, file_for_open])
+                    found_suffix = True
+            if not found_suffix:
+                file.seek(0)
+                subprocess.Popen([file.readline().strip(),
+                                dict_creations[choice_file_extension]])
 
 def show(number = None, path_to_dir = None): # потом надо доделать что бы
     path_to_dir_now = Path(os.getcwd())      # при открытие файла прога не закрывалась
@@ -108,6 +121,7 @@ def show(number = None, path_to_dir = None): # потом надо додела�
                     return
             elif number == "-2":
                 add_file(Path.cwd())
+                show(None,Path.cwd())
             path_to_file_resolve =(Path(Path.cwd()/list_with_files[int(number)])
                                 .resolve())
             if path_to_file_resolve.is_dir():
