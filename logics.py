@@ -18,10 +18,7 @@ def start():
     with open ("settings.txt", 'a+') as file:
         global path_to_settings
         path_to_settings = str((Path.cwd()/"settings.txt").resolve())
-        file.seek(0)  # переместить курсор на элемент 0
-        #бляя это пиздец, крч в начале чтения при a+ курсор находится в конце
-        # и поэтому, len возвращает то сколько символов перед курсором
-        # и каждый раз когда ты проходишся по файлу курсор становится в конец
+        file.seek(0) 
         if len(file.read().strip()) < 3:
             open_with = input("\nEnter the path to the .exe file of the program\n"
                           "through which you want to open the file without \"\"\n"
@@ -257,3 +254,4 @@ def backup(path_to_backup_place):
         print("done")
     except Exception as e:
         print(e)
+
