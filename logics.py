@@ -23,7 +23,7 @@ def start():
         # и поэтому, len возвращает то сколько символов перед курсором
         # и каждый раз когда ты проходишся по файлу курсор становится в конец
         if len(file.read().strip()) < 3:
-            open_with = input("Enter the path to the .exe file of the program\n"
+            open_with = input("\nEnter the path to the .exe file of the program\n"
                           "through which you want to open the file without \"\"\n"
                           "or just press Enter to open with notepad\n"
                           ":    ")
@@ -34,9 +34,9 @@ def start():
                 else:
                     file.write("notepad.exe\n")
                     print(path_to_open, "did not found")
+                    input()
             else:
                 file.write("notepad.exe\n")
-    print("start() executed")
 
 def add_file( directory = None):
     path_to_dir_now = os.getcwd()
@@ -47,18 +47,18 @@ def add_file( directory = None):
         os.chdir(directory)
     else:
         pass
-    choice_file_extension = input("write:\n"
+    choice_file_extension = input("\nwrite:\n"
                         "1 - to create .txt\n\n"
                         "2 - to create .md\n\n"
                         "3 - to create directory\n\n"
                         "or write your extension\n\n"
                         "or just press Enter to create .txt\n"
                         ":      ")
-    choice_file_name = input("write file name\n"
+    choice_file_name = input("\nwrite file name\n"
                              ": ")
     if choice_file_extension == "3":
         mkdir(choice_file_name)
-        print(f"dir {choice_file_name} created")
+        print(f"\ndir {choice_file_name} created")
         return
     else:
         dict_creations = {
@@ -73,7 +73,6 @@ def add_file( directory = None):
         with open(path_to_settings, "r+") as file:
             file.seek(0)
             file_for_open = Path(dict_creations[choice_file_extension])
-            print(type(file_for_open))
             found_suffix = False
             for line in file:
                 if line.strip() == file_for_open.suffix:
@@ -109,26 +108,25 @@ def show(number = None, path_to_dir = None):
             choice_file = None
             if Path.cwd().name != "records":
                 choice_file = input("\nEnter files number to open him\n"
-                                    "Or write |-1| to return\n"
-                                    "Or write |-2| to add file\n"
-                                    "Or write |-3| to move file\n"
-                                    "Or write |-4| to add special_extension\n"
-                                    "Or write |-5| ro remove some file\n"
-                                    "Or write |-6| to copy file or dir\n"
-                                    "Or write |-7| to make backup\n"
-                                    "Or write |-0| - to close program\n"
-                                    
-                                    ": ")
+                                    "       Or write |-1| to return\n\n"
+                                    "       Or write |-2| to add file\n\n"
+                                    "       Or write |-3| to move file\n\n"
+                                    "       Or write |-4| to add special_extension\n\n"
+                                    "       Or write |-5| ro remove some file\n\n"
+                                    "       Or write |-6| to copy file or dir\n\n"
+                                    "       Or write |-7| to make backup\n\n"
+                                    "       Or write |-0| - to close program\n\n"
+                                    "       : ")
             else:
-                choice_file = input("\nEnter files number to open him\n"
-                                    "Or write |-2| to add file\n"
-                                    "Or write |-3| to move file\n"
-                                    "Or write |-4| to add special_extension\n"
-                                    "Or write |-5| ro remove some file\n"
-                                    "Or write |-6| to copy file or dir\n"
-                                    "Or write |-7| to make backup\n"
-                                    "Or write |-0| to close program\n"
-                                    ": ")
+                choice_file = input("\n     Enter files number to open him\n\n"
+                                    "       Or write |-2| to add file\n\n"
+                                    "       Or write |-3| to move file\n\n"
+                                    "       Or write |-4| to add special_extension\n\n"
+                                    "       Or write |-5| ro remove some file\n\n"
+                                    "       Or write |-6| to copy file or dir\n\n"
+                                    "       Or write |-7| to make backup\n\n"
+                                    "       Or write |-0| to close program\n\n"
+                                    "       : ")
             number = choice_file
             if number == "-1" and Path.cwd().name != "records":
                 while True:
@@ -140,17 +138,17 @@ def show(number = None, path_to_dir = None):
                 show(None,Path.cwd())
             elif number == "-3":
                 path_to_movable_file = (
-                Path(list_with_files[int(input("write number of movable_file: "))]))
+                Path(list_with_files[int(input("\nwrite number of movable_file: "))]))
                 moving_place = input(
-                                    "write number of dir for moving file\n"
+                                    "\nwrite number of dir for moving file\n"
                                     "or write |-1| for moving to parent dir: ")
                 path_to_moving_place = Path(list_with_files[int(moving_place)])
                 if moving_place == "-1":
                     move_file(path_to_movable_file,Path.cwd().parent )
-                    print("done")
+                    print("\ndone")
                 else:
                     move_file(path_to_movable_file, path_to_moving_place)
-                print("done")
+                print("\ndone")
                 show(None, Path.cwd())
             elif number == "-0":
                 sys.exit()
@@ -158,11 +156,11 @@ def show(number = None, path_to_dir = None):
                 add_special_extension()
                 continue
             elif number == "-5":
-                number_of_remove_file = input("write number of file to remove: ")
+                number_of_remove_file = input("\nwrite number of file to remove: ")
                 remove_file(list_with_files[int(number_of_remove_file)])
                 continue
             elif number == "-6":
-                copy_file_number = input("write number of copying: ")
+                copy_file_number = input("\nwrite number of copying: ")
                 place_to_copy = input("write path to copy_place\n"
                                       "or just write Enter to copy in desktop\n"
                                       ": ")
@@ -172,7 +170,7 @@ def show(number = None, path_to_dir = None):
                     copy_file(list_with_files[int(copy_file_number)], place_to_copy)
                 continue
             elif number == "-7":
-                path_to_backup_place = input("write the path to backup place\n"
+                path_to_backup_place = input("\nwrite the path to backup place\n"
                                              ": ")
                 backup(path_to_backup_place)
                 continue
@@ -208,23 +206,30 @@ def show(number = None, path_to_dir = None):
                 if not found_suffix:
                     file.seek(0)
                     subprocess.Popen([file.readline().strip(), list_with_files[int(number)]])
-            print("show() executed")
 
 def add_special_extension():
     dir_now = Path.cwd()
     os.chdir(path_to_records)
     os.chdir("..")
-    special_extension = input("Write the extension for which you want"
+    special_extension = input("\nWrite the extension for which you want"
                               " to assign a special program\n"
                               "for example \".md\" or \".txt\" with out \"\"\n"
                               ":   ")
-    path_to_special_extension =input("write path to program.exe\n"
+    with open("settings.txt", 'r+') as file:
+        for line in file:
+            if line.strip() == special_extension:
+                print("\nthis special_extension already added")
+                input()
+                show(None, dir_now)
+                return
+            else:
+                pass
+    path_to_special_extension =input("\nwrite path to program.exe\n"
                                  ": ")
     with open("settings.txt", 'a+') as file:
         if Path(path_to_special_extension).exists():
             file.write(special_extension + "\n")
             file.write(path_to_special_extension + "\n")
-    print(f"add_special_extension() executed")
     show(None,dir_now)
 
 def move_file(path_to_movable_file,path_to_moving_place ):
