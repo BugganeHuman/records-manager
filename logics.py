@@ -4,6 +4,7 @@ import shutil
 import os
 import subprocess
 import sys
+import webbrowser
 
 
 path_to_settings = ""
@@ -107,6 +108,8 @@ def show(number = None, path_to_dir = None):
                                     "Or write |-2| to add file\n"
                                     "Or write |-3| to move file\n"
                                     "Or write |-4| to add special_extension\n"
+                                    "Or write |-5| ro remove some file\n"
+                                    "Or write |-6| to copy file or dir\n"
                                     "Or write |-0| - to close program\n"
                                     
                                     ": ")
@@ -116,6 +119,7 @@ def show(number = None, path_to_dir = None):
                                     "Or write |-3| to move file\n"
                                     "Or write |-4| to add special_extension\n"
                                     "Or write |-5| ro remove some file\n"
+                                    "Or write |-6| to copy file or dir\n"
                                     "Or write |-0| to close program\n"
                                     ": ")
             number = choice_file
@@ -134,12 +138,9 @@ def show(number = None, path_to_dir = None):
                                     "write number of dir for moving file\n"
                                     "or write |-1| for moving to parent dir: ")
                 path_to_moving_place = Path(list_with_files[int(moving_place)])
-                if moving_place == "-1": # баг, файлы не перемещаются в
-                    # parent папку
-                    print(path_to_movable_file)
-                    print(Path.cwd().parent/path_to_movable_file)
-                    print(1)
+                if moving_place == "-1":
                     move_file(path_to_movable_file,Path.cwd().parent )
+                    print("done")
                 else:
                     move_file(path_to_movable_file, path_to_moving_place)
                 print("done")
@@ -153,6 +154,16 @@ def show(number = None, path_to_dir = None):
                 number_of_remove_file = input("write number of file to remove: ")
                 remove_file(list_with_files[int(number_of_remove_file)])
                 continue
+            elif number == "-6":
+                copy_file_number = input("write number of copying: ")
+                place_to_copy = input("write path to copy_place\n"
+                                      "or just write Enter to copy in desktop\n"
+                                      ": ")
+                if place_to_copy == "":
+                    copy_file(list_with_files[int(copy_file_number)],str(Path.home()/"Desktop"))
+                else:
+                    copy_file(list_with_files[int(copy_file_number)], place_to_copy)
+                continue
             path_to_file_resolve =(Path(Path.cwd()/list_with_files[int(number)])
                                 .resolve())
             if path_to_file_resolve.is_dir():
@@ -162,12 +173,26 @@ def show(number = None, path_to_dir = None):
             with open (path_to_settings, 'r+') as file:
                 file.seek(0)
                 file_for_open = Path (list_with_files[int(number)])
+                full_path_to_open_file = Path.cwd()/file_for_open
                 found_suffix = False
                 for line in file:
                     if line.strip() == file_for_open.suffix:
-                        path_to_open = file.readline().strip()
-                        subprocess.Popen([path_to_open, file_for_open])
-                        found_suffix = True
+                        path_to_open = Path(file.readline().strip())
+                        browsers_list = ["chrome.exe", "msedge.exe", "firefox.exe",
+                        "brave.exe", "opera.exe", "opera_gx.exe", "vivaldi.exe",
+                        "iexplore.exe", "tor.exe", "waterfox.exe", "palemoon.exe",
+                        "maxthon.exe", "midori.exe", "slimjet.exe" ]
+                        if path_to_open.name in browsers_list:
+                            webbrowser.register(
+                                "browser",
+                                None,
+                                webbrowser.BackgroundBrowser(str(path_to_open))
+                            )
+                            webbrowser.get("browser").open(f"file:///{full_path_to_open_file}")
+                            found_suffix = True
+                        else:
+                            subprocess.Popen([path_to_open, file_for_open])
+                            found_suffix = True
                 if not found_suffix:
                     file.seek(0)
                     subprocess.Popen([file.readline().strip(), list_with_files[int(number)]])
@@ -188,7 +213,7 @@ def add_special_extension():
             file.write(special_extension + "\n")
             file.write(path_to_special_extension + "\n")
     print(f"add_special_extension() executed")
-    show(dir_now)
+    show(None,dir_now)
 
 def move_file(path_to_movable_file,path_to_moving_place ):
     shutil.move(path_to_movable_file, path_to_moving_place)
@@ -202,4 +227,9 @@ def remove_file(path_to_file):
         print("done")
     show(Path.cwd())
 
-
+def copy_file(copy_file, place_for_copy):
+    if Path(copy_file).is_file():
+        shutil.copy2(copy_file, place_for_copy)
+    elif Path(copy_file).is_dir():
+        shutil.copytree(copy_file, place_for_copy, dirs_exist_ok=True)
+    show(Path.cwd())
