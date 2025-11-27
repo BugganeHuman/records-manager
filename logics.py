@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 import webbrowser
-
+from datetime import datetime
 
 path_to_settings = ""
 path_to_records = ""
@@ -97,7 +97,12 @@ def show(number = None, path_to_dir = None):
         list_with_files.append(file.name)
     counter = 0
     for file in list_with_files:
-        print(f"\n{counter} - {file}")
+        if Path(file).is_dir():
+            print(f"\n{counter} - dir - {file}          -        "
+                  f"{datetime.fromtimestamp(os.path.getmtime(file)).strftime("%d.%m.%Y  %H.%M")}")
+        elif Path(file).is_file():
+            print(f"\n{counter} - {file}          -        "
+                  f"{datetime.fromtimestamp(os.path.getmtime(file)).strftime("%d.%m.%Y  %H.%M")}")
         counter += 1
     if number is None:
         while True:
@@ -110,6 +115,7 @@ def show(number = None, path_to_dir = None):
                                     "Or write |-4| to add special_extension\n"
                                     "Or write |-5| ro remove some file\n"
                                     "Or write |-6| to copy file or dir\n"
+                                    "Or write |-7| to make backup\n"
                                     "Or write |-0| - to close program\n"
                                     
                                     ": ")
@@ -120,6 +126,7 @@ def show(number = None, path_to_dir = None):
                                     "Or write |-4| to add special_extension\n"
                                     "Or write |-5| ro remove some file\n"
                                     "Or write |-6| to copy file or dir\n"
+                                    "Or write |-7| to make backup\n"
                                     "Or write |-0| to close program\n"
                                     ": ")
             number = choice_file
@@ -163,6 +170,11 @@ def show(number = None, path_to_dir = None):
                     copy_file(list_with_files[int(copy_file_number)],str(Path.home()/"Desktop"))
                 else:
                     copy_file(list_with_files[int(copy_file_number)], place_to_copy)
+                continue
+            elif number == "-7":
+                path_to_backup_place = input("write the path to backup place\n"
+                                             ": ")
+                backup(path_to_backup_place)
                 continue
             path_to_file_resolve =(Path(Path.cwd()/list_with_files[int(number)])
                                 .resolve())
@@ -233,3 +245,10 @@ def copy_file(copy_file, place_for_copy):
     elif Path(copy_file).is_dir():
         shutil.copytree(copy_file, place_for_copy, dirs_exist_ok=True)
     show(Path.cwd())
+
+def backup(path_to_backup_place):
+    try:
+        shutil.copytree(path_to_records, str(Path(path_to_backup_place)/Path(path_to_records).name), dirs_exist_ok=True)
+        print("done")
+    except Exception as e:
+        print(e)
