@@ -18,7 +18,10 @@ def start():
     with open ("settings.txt", 'a+') as file:
         global path_to_settings
         path_to_settings = str((Path.cwd()/"settings.txt").resolve())
-        file.seek(0) 
+        file.seek(0)  # переместить курсор на элемент 0
+        #бляя это пиздец, крч в начале чтения при a+ курсор находится в конце
+        # и поэтому, len возвращает то сколько символов перед курсором
+        # и каждый раз когда ты проходишся по файлу курсор становится в конец
         if len(file.read().strip()) < 3:
             open_with = input("\nEnter the path to the .exe file of the program\n"
                           "through which you want to open the file without \"\"\n"
@@ -94,11 +97,11 @@ def show(number = None, path_to_dir = None):
     counter = 0
     for file in list_with_files:
         if Path(file).is_dir():
-            print(f"\n{counter} - dir - {file}          -        "
-                  f"{datetime.fromtimestamp(os.path.getmtime(file)).strftime("%d.%m.%Y  %H.%M")}")
+            print(f"\n{counter} - dir - {file}")
+
         elif Path(file).is_file():
-            print(f"\n{counter} - {file}          -        "
-                  f"{datetime.fromtimestamp(os.path.getmtime(file)).strftime("%d.%m.%Y  %H.%M")}")
+            print(f"\n{counter} - {file}")
+
         counter += 1
     if number is None:
         while True:
@@ -254,4 +257,3 @@ def backup(path_to_backup_place):
         print("done")
     except Exception as e:
         print(e)
-
